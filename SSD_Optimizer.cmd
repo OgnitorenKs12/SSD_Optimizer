@@ -53,12 +53,12 @@ echo.
 REM -------------------------------------------------------------
 REM Yönetici yetkisi
 reg query "HKU\S-1-5-19" > NUL 2>&1
-	if !errorlevel! NEQ 0 (Call :Powershell "Start-Process '%~f0' -Verb Runas"&exit)
+    if !errorlevel! NEQ 0 (Call :Powershell "Start-Process '%~f0' -Verb Runas"&exit)
 REM -------------------------------------------------------------
 REM Sistem dil entegrasyonu
 FOR /F "tokens=6" %%a in ('Dism /Online /Get-intl ^| Find /I "Default system UI language"') do (
-	if "%%a" EQU "tr-TR" (set Dil=TR)
-	if "%%a" NEQ "tr-TR" (set Dil=EN)
+    if "%%a" EQU "tr-TR" (set Dil=TR)
+    if "%%a" NEQ "tr-TR" (set Dil=EN)
 )
 REM Varsayılan dili değiştirmek için aşağıdaki "set Dil=" değişkenine istediğiniz dili tanımlayın. Yukarıdaki dilleri seçebilirsiniz. 
 REM Ayrıca aşağıdaki yorum satırını bozmayı ihmal etmeyin yani "::" silmeyi unutmayın.
@@ -70,44 +70,44 @@ REM Güncel disk bilgilerini al
 Call :Powershell "Get-PhysicalDisk | Select-Object -Property MediaType,FriendlyName,Size | Format-List" > %AppData%\DiskDetailAll
 REM SSD disk verisini kontrol et
 Find "SSD" %AppData%\DiskDetailAll > NUL 2>&1
-	if %errorlevel% NEQ 0 (goto No_SSD)
+    if %errorlevel% NEQ 0 (goto No_SSD)
 REM SSD bilgisini alır
 set Count=0
 FOR /F "tokens=3" %%a in ('Findstr /i "MediaType" %AppData%\DiskDetailAll 2^>NUL') do (
-	set /a Count+=1
-	echo  TYPE_!Count!_^>%%a^> >> %AppData%\DiskDetail
-	if "%%a" EQU "SSD" (set Target=!Count!)
+    set /a Count+=1
+    echo  TYPE_!Count!_^>%%a^> >> %AppData%\DiskDetail
+    if "%%a" EQU "SSD" (set Target=!Count!)
 )
 set Count=0
 FOR /F "tokens=3" %%a in ('Findstr /i "FriendlyName" %AppData%\DiskDetailAll 2^>NUL') do (
-	set /a Count+=1
-	echo  Brand_!Count!_^>%%a^> >> %AppData%\DiskDetail
+    set /a Count+=1
+    echo  Brand_!Count!_^>%%a^> >> %AppData%\DiskDetail
 )
 set Count=0
 FOR /F "tokens=4" %%a in ('Findstr /i "FriendlyName" %AppData%\DiskDetailAll 2^>NUL') do (
-	set /a Count+=1
-	echo  Model_!Count!_^>%%a^> >> %AppData%\DiskDetail
+    set /a Count+=1
+    echo  Model_!Count!_^>%%a^> >> %AppData%\DiskDetail
 )
 set Count=0
 FOR /F "tokens=3" %%a in ('Findstr /i "Size" %AppData%\DiskDetailAll 2^>NUL') do (
-	set /a Count+=1
-	echo  Boyut_!Count!_^>%%a^> >> %AppData%\DiskDetail
+    set /a Count+=1
+    echo  Boyut_!Count!_^>%%a^> >> %AppData%\DiskDetail
 )
 REM -------------------------------------------------------------
 Call :Dil A 2 Language_!Dil!_2_
 Call :Dil B 2 Language_!Dil!_3_
 Call :Dil C 2 Language_!Dil!_4_
 FOR /F "delims=> tokens=2" %%a in ('Findstr /i "Brand_!Target!_" %AppData%\DiskDetail 2^>NUL') do (
-	FOR /F "delims=> tokens=2" %%b in ('Findstr /i "Model_!Target!_" %AppData%\DiskDetail 2^>NUL') do (
-		FOR /F "delims=> tokens=2" %%c in ('Findstr /i "Boyut_!Target!_" %AppData%\DiskDetail 2^>NUL') do (
-			set Value=%%c
-			Call :Uzunluk 1 !Value!
-			if !Uzunluk1! EQU 10 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,1!%R%[37m GB %R%[0m)
-			if !Uzunluk1! EQU 11 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,2!%R%[37m GB %R%[0m)
-			if !Uzunluk1! EQU 12 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,3!%R%[37m GB %R%[0m)
-			if !Uzunluk1! EQU 13 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,1!%R%[37m TB %R%[0m)
-		)
-	)
+    FOR /F "delims=> tokens=2" %%b in ('Findstr /i "Model_!Target!_" %AppData%\DiskDetail 2^>NUL') do (
+        FOR /F "delims=> tokens=2" %%c in ('Findstr /i "Boyut_!Target!_" %AppData%\DiskDetail 2^>NUL') do (
+            set Value=%%c
+            Call :Uzunluk 1 !Value!
+            if !Uzunluk1! EQU 10 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,1!%R%[37m GB %R%[0m)
+            if !Uzunluk1! EQU 11 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,2!%R%[37m GB %R%[0m)
+            if !Uzunluk1! EQU 12 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,3!%R%[37m GB %R%[0m)
+            if !Uzunluk1! EQU 13 (set SSD_Info=%R%[36m !LA2!:%R%[33m %%a %R%[90m│%R%[36m !LB2!:%R%[33m %%b %R%[90m│%R%[36m !LC2!:%R%[33m !Value:~0,1!%R%[37m TB %R%[0m)
+        )
+    )
 )
 goto Optimizer
 REM -------------------------------------------------------------
@@ -135,19 +135,19 @@ Call :Dil Z 2 Language_!Dil!_5_
 Call :Dil Y 2 Language_!Dil!_6_
 Call :Dil V 2 Language_!Dil!_7_
 FOR /L %%a in (1,1,13) do (
-	if %%a EQU 1 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 2 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 3 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 4 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 5 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 6 (Call :Kontrol_%%a "Reg_Query" "Servis_Query"&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 7 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 8 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 9 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 10 (Call :Kontrol_%%a&Call :Total 0 "%%a" "Language_Menu_!Dil!_%%a_" "!LV2!")
-	if %%a EQU 11 (Call :Kontrol_%%a Servis_Query&Call :Total 0 "%%a" "Language_Menu_!Dil!_%%a_" "!LV2!")
-	if %%a EQU 12 (Call :Kontrol_%%a Servis_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
-	if %%a EQU 13 (Call :Kontrol_%%a Servis_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 1 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 2 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 3 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 4 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 5 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 6 (Call :Kontrol_%%a "Reg_Query" "Servis_Query"&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 7 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 8 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 9 (Call :Kontrol_%%a Reg_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 10 (Call :Kontrol_%%a&Call :Total 0 "%%a" "Language_Menu_!Dil!_%%a_" "!LV2!")
+    if %%a EQU 11 (Call :Kontrol_%%a Servis_Query&Call :Total 0 "%%a" "Language_Menu_!Dil!_%%a_" "!LV2!")
+    if %%a EQU 12 (Call :Kontrol_%%a Servis_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
+    if %%a EQU 13 (Call :Kontrol_%%a Servis_Query&Call :Total 1 "%%a" "Language_Menu_!Dil!_%%a_" "!LY2!")
 )
 echo %R%[90m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬%R%[0m
 Call :Dil A 2 Language_!Dil!_8_
@@ -212,31 +212,31 @@ goto :eof
 REM -------------------------------------------------------------
 :Reg_Query
 reg query "%~1" /v "%~2" > NUL 2>&1
-	if !errorlevel! NEQ 0 (set Check=%R%[90m█%R%[0m&goto :eof)
+    if !errorlevel! NEQ 0 (set Check=%R%[90m█%R%[0m&goto :eof)
 set Check=%R%[92m♦%R%[0m
 FOR /F "skip=2 tokens=3" %%a in ('reg query "%~1" /v "%~2" 2^>NUL') do (
-	if "%~4" NEQ "%%a" (set Yuzde=1&set Check=%R%[90m█%R%[0m)
+    if "%~4" NEQ "%%a" (set Yuzde=1&set Check=%R%[90m█%R%[0m)
 )
 goto :eof
 
 REM -------------------------------------------------------------
 :Servis_Query
 reg query "HKLM\SYSTEM\CurrentControlSet\Services\%~1" /v "Start" > NUL 2>&1
-	if !errorlevel! NEQ 0 (set Yuzde=1&set Check=%R%[90m█%R%[0m)
-	if !errorlevel! EQU 0 (FOR /F "skip=2 tokens=3" %%g in ('reg query "HKLM\System\CurrentControlSet\Services\%~1" /v "Start" 2^>NUL') do (
-								if %%g NEQ 0x4 (if !Yuzde! EQU 0 (set Check=%R%[92m♦%R%[0m))
-								if %%g EQU 0x4 (set Yuzde=1&set Check=%R%[90m█%R%[0m))
-						  )
+    if !errorlevel! NEQ 0 (set Yuzde=1&set Check=%R%[90m█%R%[0m)
+    if !errorlevel! EQU 0 (FOR /F "skip=2 tokens=3" %%g in ('reg query "HKLM\System\CurrentControlSet\Services\%~1" /v "Start" 2^>NUL') do (
+                                if %%g NEQ 0x4 (if !Yuzde! EQU 0 (set Check=%R%[92m♦%R%[0m))
+                                if %%g EQU 0x4 (set Yuzde=1&set Check=%R%[90m█%R%[0m))
+                          )
 goto :eof
 
 REM -------------------------------------------------------------
 :SC
 if !Proces! EQU E (sc config %~1 start= %~2 > NUL 2>&1
-				   net start %~1 /y > NUL 2>&1
-				  )
+                   net start %~1 /y > NUL 2>&1
+                  )
 if !Proces! EQU D (sc config %~1 start= disabled > NUL 2>&1
-				   net stop %~1 /y > NUL 2>&1
-				  )
+                   net stop %~1 /y > NUL 2>&1
+                  )
 goto :eof
 
 REM ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -332,7 +332,7 @@ set Yuzde=0
 Call :RegDel "HKLM\SYSTEM\CurrentControlSet\Policies" /v "DisableDeleteNotification"
 set Check=%R%[92m♦%R%[0m
 FOR /F "tokens=4" %%a in ('fsutil behavior query disabledeletenotify ^| Find "NTFS DisableDeleteNotify" 2^>NUL') do (
-	if %%a EQU 1 (set Yuzde=1&set Check=%R%[90m█%R%[0m)
+    if %%a EQU 1 (set Yuzde=1&set Check=%R%[90m█%R%[0m)
 )
 goto :eof
 
@@ -360,14 +360,14 @@ goto :eof
 if %~1 EQU E (set Proces=E&goto :eof)
 if %~1 EQU D (set Proces=D&goto :eof)
 if %~1 LEQ 9 (if !Proces! EQU E (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LT2!%R%[0m&Call :Kontrol_%~1 "Reg_ON" "SC")
-			  if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :Kontrol_%~1 "Reg_OFF" "SC")
-		     )
+              if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :Kontrol_%~1 "Reg_OFF" "SC")
+             )
 if %~1 EQU 10 (if !Proces! EQU E (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LT2!%R%[0m&Call :K_10_ 0)
-			   if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :K_10_ 1)
-			  )
+               if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :K_10_ 1)
+              )
 if %~1 GEQ 11 (if !Proces! EQU E (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LT2!%R%[0m&Call :Kontrol_%~1 SC)
-			   if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :Kontrol_%~1 SC)
-			  )
+               if !Proces! EQU D (Call :Dil A 2 Language_Menu_!Dil!_%~1_&echo •%R%[36m !LA2!%R%[37m !LS2!%R%[0m&Call :Kontrol_%~1 SC)
+              )
 goto :eof
 
 REM ██████████████████████████████████████████████████████████████████
